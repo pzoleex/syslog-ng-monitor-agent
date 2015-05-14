@@ -1,0 +1,7 @@
+Installing init script on system V:
+cp init-scripts/syslog-ng-monitor-agent /etc/init.d
+
+set the workdir to the path where syslog-ng-monitor-agent.py is located
+
+chmod +x /etc/init.d/syslog-ng-monitor-agent
+/sbin/chkconfig syslog-ng-monitor-agent on

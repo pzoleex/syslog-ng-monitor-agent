@@ -1,17 +1,19 @@
-import socket, sys, select
+import socket
+import sys
+import select
+
 
 class UnixSocketWrapper(object):
-    def __init__(self, unix_socket_path = '/opt/syslog-ng/var/run/syslog-ng.ctl'):
+
+    def __init__(self, unix_socket_path='/var/lib/syslog-ng/syslog-ng.ctl'):
         self.unix_socket_path = unix_socket_path
+        self.socket = None
         self.socket = self.__connect()
 
     def __connect(self):
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         print("Connection to %s" % self.unix_socket_path)
-        try:
-            sock.connect(self.unix_socket_path)
-        except socket.error, msg:
-            raise Exception("Unable to connect, reason: %s", msg)
+        sock.connect(self.unix_socket_path)
         return sock
 
     def __disconnect(self):
@@ -19,20 +21,18 @@ class UnixSocketWrapper(object):
         self.socket.close()
 
     def do_command(self, command):
-        print("Executing command: %s" % command)
         self.send(command)
         return self.read()
 
     def send(self, command):
-        print("Command sent: %s" % command)
         self.socket.sendall(command)
 
-    def read(self):
+    def read(self, timeout=3):
         result = ""
-        ready = select.select([self.socket], [], [], 1)[0]
+        ready = select.select([self.socket], [], [], timeout)[0]
         while (ready):
             result += self.socket.recv(8192)
-            ready = select.select([self.socket], [], [], 1)[0]
+            ready = select.select([self.socket], [], [], timeout)[0]
         return result
 
     def __del__(self):

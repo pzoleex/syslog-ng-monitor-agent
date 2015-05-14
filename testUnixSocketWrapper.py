@@ -4,7 +4,9 @@ import xmlrunner
 import os
 from UnixSocketWrapper import *
 
-class TestSyslogCtl(unittest.TestCase):
+
+class TestUnixSocketWrapper(unittest.TestCase):
+
     def setUp(self):
         self.wrapper = UnixSocketWrapper()
 
